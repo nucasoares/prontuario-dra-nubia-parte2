@@ -48,7 +48,7 @@ CREATE TABLE exames (
 	
 	> Substitua `seu_usuario` e `sua_senha` pelos dados corretos do seu MySQL
 
-###3. Execute o `MenuPrincipalApp`.
+###3. Execute o `Application`.
 
 ## Para rodar com o .jar no terminal
 Dentro da pasta do projeto:

@@ -32,7 +32,6 @@ public class TelaPrincipal extends JFrame {
     private void criarMenu() {
         menuBar = new JMenuBar();
 
-        // Menu Paciente
         menuPaciente = new JMenu("Paciente");
 
         menuItemNovo = new JMenuItem("Novo");
@@ -48,14 +47,14 @@ public class TelaPrincipal extends JFrame {
         menuPaciente.add(menuItemListar);
         menuPaciente.add(menuItemBuscar);
 
-        // Menu Exame
+
         JMenu menuExame = new JMenu("Exame");
 
         JMenuItem menuItemExameNovo = new JMenuItem("Novo");
         menuItemExameNovo.addActionListener(e -> new TelaCriarExame());
 
         JMenuItem menuItemExameListar = new JMenuItem("Listar");
-        // Ajuste aqui: TelaListarExames() sem parâmetro, conforme a versão corrigida
+
         menuItemExameListar.addActionListener(e -> new TelaListarExames());
 
         menuExame.add(menuItemExameNovo);

@@ -12,7 +12,11 @@ import java.time.format.DateTimeFormatter;
 
 public class TelaEditarExame extends JFrame {
 
-    private Exame exame;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Exame exame;
     private JTextArea txtDescricao;
     private JTextField txtData;
     private JComboBox<Paciente> comboPacientes;
@@ -23,7 +27,7 @@ public class TelaEditarExame extends JFrame {
         this.exame = exame;
         this.exameFacade = new ExameFacade();
         inicializarComponentes();
-        setVisible(true);  // Exibir janela ao criar
+        setVisible(true);  
     }
 
     private void inicializarComponentes() {
@@ -35,8 +39,7 @@ public class TelaEditarExame extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // Label e Combo paciente
+        
         JLabel lblPaciente = new JLabel("Paciente:");
         gbc.gridx = 0; gbc.gridy = 0;
         painel.add(lblPaciente, gbc);
@@ -46,7 +49,6 @@ public class TelaEditarExame extends JFrame {
             comboPacientes.addItem(p);
         }
 
-        // Seleciona paciente atual no combo
         if (exame.getPaciente() != null) {
             for (int i = 0; i < comboPacientes.getItemCount(); i++) {
                 if (comboPacientes.getItemAt(i).getId().equals(exame.getPaciente().getId())) {
@@ -59,7 +61,6 @@ public class TelaEditarExame extends JFrame {
         gbc.gridx = 1; gbc.gridy = 0;
         painel.add(comboPacientes, gbc);
 
-        // Label e campo descrição
         JLabel lblDescricao = new JLabel("Descrição:");
         gbc.gridx = 0; gbc.gridy = 1;
         painel.add(lblDescricao, gbc);
@@ -83,7 +84,6 @@ public class TelaEditarExame extends JFrame {
         gbc.gridx = 1; gbc.gridy = 2;
         painel.add(txtData, gbc);
 
-        // Botão salvar alterações
         JButton btnSalvar = new JButton("Salvar Alterações");
         btnSalvar.addActionListener(this::salvarAlteracoes);
         gbc.gridx = 0; gbc.gridy = 3;

@@ -1,5 +1,7 @@
 package prontuario.drnubia.model;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,17 +11,21 @@ public class Paciente {
 	private Long id;
 	private String nome;
 	private String cpf;
+	private LocalDateTime dataNascimento;
 	
 	private List<Exame> exames = new ArrayList<Exame>();
 
 	public Paciente() {
 	}
 
-	public Paciente(Long id, String nome, String cpf) {
+	public Paciente(Long id, String nome, String cpf, LocalDateTime dataNascimento) {
 		this.id = id;
 		this.nome = nome;
 		this.cpf = cpf;
+		this.dataNascimento = dataNascimento;
 	}
+	
+
 
 	public Long getId() {
 		return id;
@@ -43,6 +49,14 @@ public class Paciente {
 
 	public void setCpf(String cpf) {
 		this.cpf = cpf;
+	}
+
+	public LocalDateTime getDataNascimento() {
+		return dataNascimento;
+	}
+
+	public void setDataNascimento(LocalDateTime dataNascimento) {
+		this.dataNascimento = dataNascimento;
 	}
 
 	public List<Exame> getExames() {
@@ -73,6 +87,14 @@ public class Paciente {
 			return false;
 		Paciente other = (Paciente) obj;
 		return Objects.equals(cpf, other.cpf);
+	}
+
+	public Object getDataFormatada() {
+		 if (this.dataNascimento == null) {
+		        return "";
+		    }
+		    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		    return this.dataNascimento.format(formatter);
 	}
 	
 	

@@ -49,7 +49,12 @@ public class TelaLocalizarExame extends JDialog {
         add(painelBusca, BorderLayout.NORTH);
 
         modeloTabela = new DefaultTableModel(new String[]{"ID Exame", "Nome Paciente", "Data", "Descrição"}, 0) {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public boolean isCellEditable(int row, int column) {
                 return false; // somente leitura
             }
@@ -65,7 +70,7 @@ public class TelaLocalizarExame extends JDialog {
     private void pesquisarExames() {
         String termo = txtBusca.getText().trim().toLowerCase();
 
-        List<Exame> exames = facade.listarTodos(); // Atenção: este método precisa existir e retornar todos exames
+        List<Exame> exames = facade.listarTodos();
 
         List<Exame> resultadosFiltrados = exames.stream()
             .filter(e -> e.getPaciente() != null &&

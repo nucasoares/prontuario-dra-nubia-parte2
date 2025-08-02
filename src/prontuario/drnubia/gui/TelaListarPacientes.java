@@ -53,7 +53,7 @@ public class TelaListarPacientes extends JFrame {
 
         add(painelTopo, BorderLayout.NORTH);
 
-        modeloTabela = new DefaultTableModel(new String[]{"ID", "Nome", "CPF"}, 0);
+        modeloTabela = new DefaultTableModel(new String[]{"ID", "Nome", "CPF", "Data de Nascimento"}, 0);
         tabela = new JTable(modeloTabela);
         add(new JScrollPane(tabela), BorderLayout.CENTER);
 
@@ -71,9 +71,10 @@ public class TelaListarPacientes extends JFrame {
     public void carregarPacientes() {
         modeloTabela.setRowCount(0);
         List<Paciente> pacientes = facade.buscarTodos();
+        
         for (Paciente p : pacientes) {
             modeloTabela.addRow(new Object[]{
-                    p.getId(), p.getNome(), p.getCpf()
+                    p.getId(), p.getNome(), p.getCpf(), p.getDataFormatada()
             });
         }
     }
@@ -89,8 +90,9 @@ public class TelaListarPacientes extends JFrame {
 
         Paciente paciente = facade.buscarPorCpf(cpf);
         if (paciente != null) {
+
             modeloTabela.addRow(new Object[]{
-                    paciente.getId(), paciente.getNome(), paciente.getCpf()
+                    paciente.getId(), paciente.getNome(), paciente.getCpf(), paciente.getDataFormatada()
             });
         } else {
             JOptionPane.showMessageDialog(this, "Paciente não encontrado para o CPF informado.");

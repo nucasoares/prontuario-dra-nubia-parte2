@@ -1,104 +1,129 @@
 package prontuario.drnubia.gui;
 
+import prontuario.drnubia.exception.ExameInvalidoException;
 import prontuario.drnubia.facade.ExameFacade;
-import prontuario.drnubia.model.Paciente;
+import prontuario.drnubia.facade.PacienteFacade;
 import prontuario.drnubia.model.Exame;
+import prontuario.drnubia.model.Paciente;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
 
 public class TelaCriarExame extends JFrame {
 
-    private JTextArea campoDescricao;
-    private JTextField campoData;
+    private static final long serialVersionUID = 1L;
+    private JTextField txtDescricao;
+    private JTextField txtData;         
+    private JSpinner horaSpinner;
     private JComboBox<Paciente> comboPacientes;
     private ExameFacade exameFacade;
+    private PacienteFacade pacienteFacade;
+
+    private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public TelaCriarExame() {
-        super("Criar Exame");
-        exameFacade = new ExameFacade();
-        inicializarComponentes();
-        setVisible(true);  // Exibir janela ao criar
-    }
-
-    private void inicializarComponentes() {
-        setSize(500, 400);
+        setTitle("Criar Exame");
+        setSize(400, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel painel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        exameFacade = new ExameFacade();
+        pacienteFacade = PacienteFacade.getInstance();  
 
-        // Label e Combo paciente
-        JLabel lblPaciente = new JLabel("Paciente:");
-        gbc.gridx = 0; gbc.gridy = 0;
-        painel.add(lblPaciente, gbc);
-
-        comboPacientes = new JComboBox<>();
-        for (Paciente p : exameFacade.listarPacientes()) {
-            comboPacientes.addItem(p); // Mostrar nome+CPF via toString()
-        }
-        gbc.gridx = 1; gbc.gridy = 0;
-        painel.add(comboPacientes, gbc);
-
-        // Label e campo descrição
         JLabel lblDescricao = new JLabel("Descrição:");
-        gbc.gridx = 0; gbc.gridy = 1;
-        painel.add(lblDescricao, gbc);
+        txtDescricao = new JTextField(20);
 
-        campoDescricao = new JTextArea(5, 20);
-        campoDescricao.setLineWrap(true);
-        campoDescricao.setWrapStyleWord(true);
-        JScrollPane scrollDescricao = new JScrollPane(campoDescricao);
-        gbc.gridx = 1; gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        painel.add(scrollDescricao, gbc);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JLabel lblData = new JLabel("Data (dd/MM/yyyy):");
+        txtData = new JTextField(10);
 
-        // Label e campo data
-        JLabel lblData = new JLabel("Data (dd/MM/yyyy HH:mm):");
-        gbc.gridx = 0; gbc.gridy = 2;
-        painel.add(lblData, gbc);
+        JLabel lblHora = new JLabel("Hora:");
+        SpinnerDateModel horaModel = new SpinnerDateModel();
+        horaSpinner = new JSpinner(horaModel);
+        JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(horaSpinner, "HH:mm");
+        horaSpinner.setEditor(timeEditor);
+        horaSpinner.setValue(new Date()); 
 
-        campoData = new JTextField();
-        gbc.gridx = 1; gbc.gridy = 2;
-        painel.add(campoData, gbc);
+        JLabel lblPaciente = new JLabel("Paciente:");
+        comboPacientes = new JComboBox<>();
+        carregarPacientes();
 
-        // Botão salvar
         JButton btnSalvar = new JButton("Salvar");
-        btnSalvar.addActionListener(this::salvarExame);
-        gbc.gridx = 0; gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        painel.add(btnSalvar, gbc);
+        btnSalvar.addActionListener(e -> salvar());
 
-        add(painel);
+        JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.add(lblDescricao);
+        panel.add(txtDescricao);
+        panel.add(lblData);
+        panel.add(txtData);
+        panel.add(lblHora);
+        panel.add(horaSpinner);
+        panel.add(lblPaciente);
+        panel.add(comboPacientes);
+        panel.add(new JLabel());
+        panel.add(btnSalvar);
+
+        add(panel);
+        setVisible(true);
     }
 
-    private void salvarExame(ActionEvent e) {
-        try {
-            Paciente pacienteSelecionado = (Paciente) comboPacientes.getSelectedItem();
-            String descricao = campoDescricao.getText().trim();
-            String dataTexto = campoData.getText().trim();
+    private void carregarPacientes() {
+        List<Paciente> pacientes = pacienteFacade.listarPacientes();
+        for (Paciente p : pacientes) {
+            comboPacientes.addItem(p);
+        }
+    }
 
-            if (pacienteSelecionado == null || descricao.isEmpty() || dataTexto.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
+    private void salvar() {
+        try {
+            String descricao = txtDescricao.getText().trim();
+            String dataTexto = txtData.getText().trim();
+            Date horaSelecionada = (Date) horaSpinner.getValue();
+            Paciente paciente = (Paciente) comboPacientes.getSelectedItem();
+
+            if (descricao.isEmpty() || dataTexto.isEmpty() || paciente == null) {
+                throw new ExameInvalidoException("Todos os campos devem ser preenchidos.");
             }
 
-            LocalDateTime data = LocalDateTime.parse(dataTexto, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-            Exame exame = new Exame(null, descricao, data, pacienteSelecionado);
+            LocalDate data;
+            try {
+                data = LocalDate.parse(dataTexto, FORMATO_DATA);
+            } catch (DateTimeParseException e) {
+                throw new ExameInvalidoException("Formato da data inválido. Use dd/MM/yyyy.");
+            }
+
+          
+            LocalTime hora = horaSelecionada.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+            LocalDateTime dataHora = LocalDateTime.of(data, hora);
+
+            if (dataHora.isBefore(LocalDateTime.now())) {
+                throw new ExameInvalidoException("A data e hora do exame não podem ser no passado.");
+            }
+
+            if (exameFacade.existeExameNoMesmoHorario(paciente, dataHora)) {
+                throw new ExameInvalidoException("O paciente já possui um exame agendado para essa data e hora.");
+            }
+
+            Exame exame = new Exame(null, descricao, dataHora, paciente);
             exameFacade.criarExame(exame);
 
             JOptionPane.showMessageDialog(this, "Exame criado com sucesso!");
             dispose();
 
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao salvar exame: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (ExameInvalidoException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao salvar exame.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

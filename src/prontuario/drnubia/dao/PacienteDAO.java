@@ -1,5 +1,6 @@
 package prontuario.drnubia.dao;
 
+import java.sql.Timestamp;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,10 +27,11 @@ public class PacienteDAO implements IEntityDAO<Paciente>{
 
         try {
             PreparedStatement pstm = conn.getConnection()
-                    .prepareStatement("INSERT INTO PACIENTES (nome, cpf) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                    .prepareStatement("INSERT INTO PACIENTES (nome, cpf,  data_nascimento) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
             pstm.setString(1, t.getNome());
             pstm.setString(2, t.getCpf());
+            pstm.setTimestamp(3, Timestamp.valueOf(t.getDataNascimento()));
             pstm.executeUpdate();
 
             ResultSet rs = pstm.getGeneratedKeys();
@@ -60,7 +62,8 @@ public class PacienteDAO implements IEntityDAO<Paciente>{
                 Paciente p = new Paciente(
                         rs.getLong("id"),
                         rs.getString("nome"),
-                        rs.getString("cpf")
+                        rs.getString("cpf"),
+                        rs.getTimestamp("data_nascimento").toLocalDateTime()
                 );
                 rs.close();
                 pstm.close();
@@ -80,10 +83,12 @@ public class PacienteDAO implements IEntityDAO<Paciente>{
     public void update(Paciente t) {
         try {
             PreparedStatement pstm = conn.getConnection()
-                    .prepareStatement("UPDATE PACIENTES SET nome = ?, cpf = ? WHERE id = ?");
+                    .prepareStatement("UPDATE PACIENTES SET nome = ?, cpf = ?, data_nascimento = ? WHERE id = ?");
             pstm.setString(1, t.getNome());
             pstm.setString(2, t.getCpf());
-            pstm.setLong(3, t.getId());
+            pstm.setTimestamp(3, Timestamp.valueOf(t.getDataNascimento()));
+            pstm.setLong(4, t.getId());
+
             pstm.executeUpdate();
             pstm.close();
         } catch (SQLException e) {
@@ -115,7 +120,8 @@ public class PacienteDAO implements IEntityDAO<Paciente>{
                 Paciente p = new Paciente(
                         rs.getLong("id"),
                         rs.getString("nome"),
-                        rs.getString("cpf")
+                        rs.getString("cpf"),
+                        rs.getTimestamp("data_nascimento").toLocalDateTime()
                 );
                 rs.close();
                 pstm.close();
@@ -145,7 +151,8 @@ public class PacienteDAO implements IEntityDAO<Paciente>{
                 Paciente p = new Paciente(
                         rs.getLong("id"),
                         rs.getString("nome"),
-                        rs.getString("cpf")
+                        rs.getString("cpf"),
+                        rs.getTimestamp("data_nascimento").toLocalDateTime()
                 );
                 lista.add(p);
             }

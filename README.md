@@ -19,7 +19,8 @@ USE prontuario_database;
 CREATE TABLE pacientes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     cpf VARCHAR(14) UNIQUE NOT NULL,
-    nome VARCHAR(255) NOT NULL
+    nome VARCHAR(255) NOT NULL,
+    data_nascimento DATETIME NOT NULL
 );
 
 CREATE TABLE exames (
@@ -33,6 +34,7 @@ CREATE TABLE exames (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+
 ```
 ###2. Configure a conexão com o banco.
 
@@ -51,7 +53,7 @@ CREATE TABLE exames (
 ## Para rodar com o .jar no terminal
 Dentro da pasta do projeto:
 
- > java -cp "lib/*;prontuario.jar" prontuario.drnubia.app.MenuPrincipalApp
+ > java -cp "lib/*;prontuario.jar" prontuario.drnubia.app.Application
 
 
 

@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,12 +25,16 @@ public class TelaCadastroPaciente extends JFrame {
 	private JPanel painelBotoes;
 	private JLabel lblNome;
 	private JLabel lblCpf;
+	private JLabel lblDataNascimento;
 	private JTextField txtNome;
 	private JTextField txtCpf;
+	private JTextField txtDataNascimento;
 
 	private JButton btnSalvar;
 	private JButton btnLimpar;
 	private JButton btnSair;
+	
+	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	public TelaCadastroPaciente() {
 		setTitle("Cadastro de Paciente");
@@ -36,7 +42,7 @@ public class TelaCadastroPaciente extends JFrame {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setLayout(new BorderLayout());
 		setResizable(false);
-		setLocationRelativeTo(null); // centraliza a janela
+		setLocationRelativeTo(null); 
 
 		carregarForm();
 		carregarBotoes();
@@ -52,13 +58,17 @@ public class TelaCadastroPaciente extends JFrame {
 
 		lblNome = new JLabel("Nome:");
 		lblCpf = new JLabel("CPF:");
+		lblDataNascimento = new JLabel("Data de Nascimento (dd/MM/yyyy):");
 		txtNome = new JTextField(20);
 		txtCpf = new JTextField(11);
+		txtDataNascimento = new JTextField(16);
 
 		painelForm.add(lblNome);
 		painelForm.add(txtNome);
 		painelForm.add(lblCpf);
 		painelForm.add(txtCpf);
+		painelForm.add(lblDataNascimento);
+	    painelForm.add(txtDataNascimento);
 	}
 
 	private void carregarBotoes() {
@@ -74,11 +84,31 @@ public class TelaCadastroPaciente extends JFrame {
 				try {
 					String nome = txtNome.getText().trim();
 					String cpf = txtCpf.getText().trim();
+					String dataStr = txtDataNascimento.getText().trim();
+					
+				
+		            if (!prontuario.drnubia.util.Validacoes.validarNome(nome)) {
+		                JOptionPane.showMessageDialog(null, "Nome inválido. Use apenas letras, espaços e acentos (mínimo 3 caracteres).", "Erro", JOptionPane.ERROR_MESSAGE);
+		                return;
+		            }
 
-					PacienteFacade.getInstance().criarPaciente(nome, cpf);
+		           
+		            if (!prontuario.drnubia.util.Validacoes.validarCPF(cpf)) {
+		                JOptionPane.showMessageDialog(null, "CPF inválido. Verifique o número e formato.", "Erro", JOptionPane.ERROR_MESSAGE);
+		                return;
+		            }
+
+		            if (!prontuario.drnubia.util.Validacoes.validarData(dataStr)) {
+		                JOptionPane.showMessageDialog(null, "Data de nascimento inválida. Use o formato dd/MM/yyyy.", "Erro", JOptionPane.ERROR_MESSAGE);
+		                return;
+		            }
+					
+		            LocalDateTime dataNascimento = java.time.LocalDate.parse(dataStr, formatter).atStartOfDay();
+					
+					PacienteFacade.getInstance().criarPaciente(nome, cpf, dataNascimento);
 
 					JOptionPane.showMessageDialog(null, "Paciente cadastrado com sucesso!");
-					dispose(); // fecha a janela
+					dispose(); 
 				} catch (PacienteJaCadastradoException ex) {
 					JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
 				} catch (Exception ex) {
@@ -98,7 +128,7 @@ public class TelaCadastroPaciente extends JFrame {
 		btnSair.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dispose(); // fecha a janela
+				dispose(); 
 			}
 		});
 
@@ -110,5 +140,6 @@ public class TelaCadastroPaciente extends JFrame {
 	private void limparComponentes() {
 		txtNome.setText("");
 		txtCpf.setText("");
+		txtDataNascimento.setText("");
 	}
 }

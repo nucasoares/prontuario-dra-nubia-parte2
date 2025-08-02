@@ -1,5 +1,6 @@
 package prontuario.drnubia.facade;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import prontuario.drnubia.dao.PacienteDAO;
@@ -20,18 +21,17 @@ public class PacienteFacade {
         return instance;
     }
 
-    public void criarPaciente(String nome, String cpf) {
+    public void criarPaciente(String nome, String cpf, LocalDateTime dataNascimento) {
         if (daoPaciente.buscarPorCpf(cpf) != null) {
             throw new PacienteJaCadastradoException("Paciente com CPF já cadastrado.");
         }
-        daoPaciente.create(new Paciente(0L, nome, cpf));
+        daoPaciente.create(new Paciente(0L, nome, cpf, dataNascimento));
     }
 
     public List<Paciente> listarPacientes() {
         return daoPaciente.findAll();
     }
 
-    // Método para manter nomes usados na GUI
     public List<Paciente> buscarTodos() {
         return daoPaciente.findAll();
     }

@@ -27,7 +27,6 @@ public class TelaBuscarPacientePorCpf extends JDialog {
 
         setLayout(new BorderLayout());
 
-        // Painel de busca
         JPanel painelBusca = new JPanel(new FlowLayout());
         painelBusca.add(new JLabel("CPF:"));
         txtCpf = new JTextField(15);
@@ -41,12 +40,12 @@ public class TelaBuscarPacientePorCpf extends JDialog {
 
         add(painelBusca, BorderLayout.NORTH);
 
-        // Tabela
+
         modeloTabela = new DefaultTableModel(new Object[]{"ID", "Nome", "CPF"}, 0);
         tabela = new JTable(modeloTabela);
         add(new JScrollPane(tabela), BorderLayout.CENTER);
 
-        // Ações
+      
         btnPesquisar.addActionListener(e -> buscarPaciente());
         btnSair.addActionListener(e -> dispose());
 
@@ -64,8 +63,7 @@ public class TelaBuscarPacientePorCpf extends JDialog {
         }
 
         Paciente paciente = pacienteDAO.buscarPorCpf(cpf);
-        modeloTabela.setRowCount(0); // limpa tabela
-
+        modeloTabela.setRowCount(0);
         if (paciente != null) {
             modeloTabela.addRow(new Object[]{
                 paciente.getId(),
